@@ -1,0 +1,57 @@
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">TODO LIST</div>
+        </div>
+        <div class="card-body">
+             Add New ToDo Item
+            <div>
+                <form class="form-inline" (ngSubmit)="create()">
+                    <label>
+                        <input
+                                name="title"
+                                type="text"
+                                [(ngModel)]="newTask.title"
+                                class="form-control mr-2"
+                                placeholder="enter title..."
+                        />
+                    </label>
+                    <label>
+                        <input
+                                name="description"
+                                type="text"
+                                [(ngModel)]="newTask.description"
+                                class="form-control mr-2"
+                                placeholder="enter description..."
+                        />
+                    </label>
+                    <button type="submit" class="btn btn-primary">Add New ToDo</button>
+                </form>
+            </div>
+            <div>
+                <ul id="TodoList">
+                    <table class="table table-striped table-bordered">
+                        <thead class="bg-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Created On</th>
+                            <th>Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let todoItem of taskListDto" >
+                            <td>{{ todoItem.title }}</td>
+                            <td>{{ todoItem.description }}</td>
+                            <td>{{ todoItem.creationTime }}</td>
+                            <td> <button (click)="delete(todoItem.id)" >Delete</button></td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,86 @@
+<div [@routerTransition]>
+    <section class="content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-6">
+                <h1> Events </h1> (<input type="checkbox" id="includeCanceledEvents"  [(ngModel)]="includeCanceledEvents" (change)="includeCanceledEventsCheckboxChanged()">
+                <label for="includeCanceledEvents">Show Cancelled Events</label>)
+            </div>
+            <div class="col-6 text-right">
+                    <button class="btn bg-blue" data-toggle="modal" (click)="createEvent()">Create New Event</button>
+            </div>
+        </div>
+    </div>
+    </section>
+    <section class="content px-2">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <thead class="bg-light">
+                            <tr>
+                                <th> Title </th>
+                                <th> Description </th>
+                                <th> Date and Time of Event </th>
+                                <th> Actions </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr
+                                *ngFor="let event of events | paginate
+                      : {
+                          id: 'server',
+                          itemsPerPage: pageSize,
+                          currentPage: pageNumber,
+                          totalItems: totalItems
+                        }"
+                                [class]="event.isCancelled ? 'header bg-red' : 'header'"
+                            >
+                                <td> {{event.title}}</td>
+                                <td> {{event.description}}</td>
+                                <td>
+                                    <!--<div class="custom-control custom-checkbox">
+                                    </div>-->
+                                    {{event.date.format("DD-MM-YYYY hh:mm a") }}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn bg-deep-purple waves-effect btn-sm"
+                                            [routerLink]="['/app/events', event.id]">
+                                        <span>{{l("Details")}}</span>
+                                        <i class="fa fa-arrow-circle-right"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer table-card-footer bg-light border-top">
+                    <div class="row">
+                        <div class="col-sm-4 col-12 text-sm-left text-center">
+                            <!--<button class="btn btn-secondary" (click)="refresh()">
+                                <i class="fas fa-redo-alt"></i>
+                            </button>-->
+                        </div>
+                        <div class="col-sm-4 col-12 text-center">
+                            <p class="mb-0 my-2">
+                                {{ "TotalRecordsCount" | localize: totalItems }}
+                            </p>
+                        </div>
+                        <div class="col-sm-4 col-12">
+                            <div class="float-sm-right m-auto">
+                                <abp-pagination-controls
+                                        id="server"
+                                        (pageChange)="getDataPage($event)"
+                                >
+                                </abp-pagination-controls>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<app-create-event #createEventModal (modalSave)="refresh()"></app-create-event>
