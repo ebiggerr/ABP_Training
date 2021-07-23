@@ -272,62 +272,11 @@ export class EventServiceProxy {
     }
 
     /**
-     * @return Success
-     */
-    getPagedListing(): Observable<EventListDtoPagedResultDto> {
-        let url_ = this.baseUrl + "/api/services/app/Event/GetPagedListing";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetPagedListing(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetPagedListing(<any>response_);
-                } catch (e) {
-                    return <Observable<EventListDtoPagedResultDto>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<EventListDtoPagedResultDto>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processGetPagedListing(response: HttpResponseBase): Observable<EventListDtoPagedResultDto> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = EventListDtoPagedResultDto.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<EventListDtoPagedResultDto>(<any>null);
-    }
-
-    /**
      * @param id (optional) 
      * @return Success
      */
-    getDetail(id: string | undefined): Observable<EventDetailOutput> {
-        let url_ = this.baseUrl + "/api/services/app/Event/GetDetail?";
+    getDetailWithVenue(id: string | undefined): Observable<EventDetailOutput> {
+        let url_ = this.baseUrl + "/api/services/app/Event/GetDetailWithVenue?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
         else if (id !== undefined)
@@ -343,11 +292,11 @@ export class EventServiceProxy {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetDetail(response_);
+            return this.processGetDetailWithVenue(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetDetail(<any>response_);
+                    return this.processGetDetailWithVenue(<any>response_);
                 } catch (e) {
                     return <Observable<EventDetailOutput>><any>_observableThrow(e);
                 }
@@ -356,7 +305,7 @@ export class EventServiceProxy {
         }));
     }
 
-    protected processGetDetail(response: HttpResponseBase): Observable<EventDetailOutput> {
+    protected processGetDetailWithVenue(response: HttpResponseBase): Observable<EventDetailOutput> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -382,8 +331,8 @@ export class EventServiceProxy {
      * @param body (optional) 
      * @return Success
      */
-    createEvent(body: CreateEventInput | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/services/app/Event/CreateEvent";
+    createEventWithVenue(body: CreateEventWithVenueInput | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Event/CreateEventWithVenue";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -398,11 +347,11 @@ export class EventServiceProxy {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreateEvent(response_);
+            return this.processCreateEventWithVenue(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processCreateEvent(<any>response_);
+                    return this.processCreateEventWithVenue(<any>response_);
                 } catch (e) {
                     return <Observable<void>><any>_observableThrow(e);
                 }
@@ -411,7 +360,7 @@ export class EventServiceProxy {
         }));
     }
 
-    protected processCreateEvent(response: HttpResponseBase): Observable<void> {
+    protected processCreateEventWithVenue(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2727,6 +2676,126 @@ export class UserServiceProxy {
     }
 }
 
+@Injectable()
+export class VenueServiceProxy {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
+     * @param onlyShowAvailableVenues (optional) 
+     * @return Success
+     */
+    getList(onlyShowAvailableVenues: boolean | undefined): Observable<VenueDtoListResultDto> {
+        let url_ = this.baseUrl + "/api/services/app/Venue/GetList?";
+        if (onlyShowAvailableVenues === null)
+            throw new Error("The parameter 'onlyShowAvailableVenues' cannot be null.");
+        else if (onlyShowAvailableVenues !== undefined)
+            url_ += "OnlyShowAvailableVenues=" + encodeURIComponent("" + onlyShowAvailableVenues) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetList(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetList(<any>response_);
+                } catch (e) {
+                    return <Observable<VenueDtoListResultDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<VenueDtoListResultDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetList(response: HttpResponseBase): Observable<VenueDtoListResultDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = VenueDtoListResultDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<VenueDtoListResultDto>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    create(body: CreateVenueInput | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Venue/Create";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+}
+
 export class IsTenantAvailableInput implements IIsTenantAvailableInput {
     tenancyName: string;
 
@@ -3118,61 +3187,6 @@ export interface IEventListDtoListResultDto {
     items: EventListDto[] | undefined;
 }
 
-export class EventListDtoPagedResultDto implements IEventListDtoPagedResultDto {
-    totalCount: number;
-    items: EventListDto[] | undefined;
-
-    constructor(data?: IEventListDtoPagedResultDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.totalCount = _data["totalCount"];
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items.push(EventListDto.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): EventListDtoPagedResultDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new EventListDtoPagedResultDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["totalCount"] = this.totalCount;
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item.toJSON());
-        }
-        return data; 
-    }
-
-    clone(): EventListDtoPagedResultDto {
-        const json = this.toJSON();
-        let result = new EventListDtoPagedResultDto();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface IEventListDtoPagedResultDto {
-    totalCount: number;
-    items: EventListDto[] | undefined;
-}
-
 export class EventRegistrationDto implements IEventRegistrationDto {
     readonly eventId: string;
     readonly userId: number;
@@ -3240,6 +3254,65 @@ export interface IEventRegistrationDto {
     id: number;
 }
 
+export class VenueDto implements IVenueDto {
+    id: string;
+    name: string | undefined;
+    address: string | undefined;
+    city: string | undefined;
+    state: string | undefined;
+
+    constructor(data?: IVenueDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.address = _data["address"];
+            this.city = _data["city"];
+            this.state = _data["state"];
+        }
+    }
+
+    static fromJS(data: any): VenueDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new VenueDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["address"] = this.address;
+        data["city"] = this.city;
+        data["state"] = this.state;
+        return data; 
+    }
+
+    clone(): VenueDto {
+        const json = this.toJSON();
+        let result = new VenueDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IVenueDto {
+    id: string;
+    name: string | undefined;
+    address: string | undefined;
+    city: string | undefined;
+    state: string | undefined;
+}
+
 export class EventDetailOutput implements IEventDetailOutput {
     title: string | undefined;
     description: string | undefined;
@@ -3248,6 +3321,7 @@ export class EventDetailOutput implements IEventDetailOutput {
     readonly maxRegistrationCount: number;
     registrationsCount: number;
     registrations: EventRegistrationDto[] | undefined;
+    venue: VenueDto;
     isDeleted: boolean;
     deleterUserId: number | undefined;
     deletionTime: moment.Moment | undefined;
@@ -3279,6 +3353,7 @@ export class EventDetailOutput implements IEventDetailOutput {
                 for (let item of _data["registrations"])
                     this.registrations.push(EventRegistrationDto.fromJS(item));
             }
+            this.venue = _data["venue"] ? VenueDto.fromJS(_data["venue"]) : <any>undefined;
             this.isDeleted = _data["isDeleted"];
             this.deleterUserId = _data["deleterUserId"];
             this.deletionTime = _data["deletionTime"] ? moment(_data["deletionTime"].toString()) : <any>undefined;
@@ -3310,6 +3385,7 @@ export class EventDetailOutput implements IEventDetailOutput {
             for (let item of this.registrations)
                 data["registrations"].push(item.toJSON());
         }
+        data["venue"] = this.venue ? this.venue.toJSON() : <any>undefined;
         data["isDeleted"] = this.isDeleted;
         data["deleterUserId"] = this.deleterUserId;
         data["deletionTime"] = this.deletionTime ? this.deletionTime.toISOString() : <any>undefined;
@@ -3337,6 +3413,7 @@ export interface IEventDetailOutput {
     maxRegistrationCount: number;
     registrationsCount: number;
     registrations: EventRegistrationDto[] | undefined;
+    venue: VenueDto;
     isDeleted: boolean;
     deleterUserId: number | undefined;
     deletionTime: moment.Moment | undefined;
@@ -3347,14 +3424,15 @@ export interface IEventDetailOutput {
     id: string;
 }
 
-export class CreateEventInput implements ICreateEventInput {
+export class CreateEventWithVenueInput implements ICreateEventWithVenueInput {
+    venueId: string;
     title: string;
     description: string | undefined;
     date: moment.Moment;
     maxRegistrationCount: number;
     id: string;
 
-    constructor(data?: ICreateEventInput) {
+    constructor(data?: ICreateEventWithVenueInput) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -3365,6 +3443,7 @@ export class CreateEventInput implements ICreateEventInput {
 
     init(_data?: any) {
         if (_data) {
+            this.venueId = _data["venueId"];
             this.title = _data["title"];
             this.description = _data["description"];
             this.date = _data["date"] ? moment(_data["date"].toString()) : <any>undefined;
@@ -3373,15 +3452,16 @@ export class CreateEventInput implements ICreateEventInput {
         }
     }
 
-    static fromJS(data: any): CreateEventInput {
+    static fromJS(data: any): CreateEventWithVenueInput {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateEventInput();
+        let result = new CreateEventWithVenueInput();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["venueId"] = this.venueId;
         data["title"] = this.title;
         data["description"] = this.description;
         data["date"] = this.date ? this.date.toISOString() : <any>undefined;
@@ -3390,15 +3470,16 @@ export class CreateEventInput implements ICreateEventInput {
         return data; 
     }
 
-    clone(): CreateEventInput {
+    clone(): CreateEventWithVenueInput {
         const json = this.toJSON();
-        let result = new CreateEventInput();
+        let result = new CreateEventWithVenueInput();
         result.init(json);
         return result;
     }
 }
 
-export interface ICreateEventInput {
+export interface ICreateEventWithVenueInput {
+    venueId: string;
     title: string;
     description: string | undefined;
     date: moment.Moment;
@@ -3490,6 +3571,120 @@ export class EventRegisterOutput implements IEventRegisterOutput {
 
 export interface IEventRegisterOutput {
     registrationId: number;
+}
+
+export class EventListDtoPagedResultDto implements IEventListDtoPagedResultDto {
+    totalCount: number;
+    items: EventListDto[] | undefined;
+
+    constructor(data?: IEventListDtoPagedResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items.push(EventListDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): EventListDtoPagedResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new EventListDtoPagedResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+
+    clone(): EventListDtoPagedResultDto {
+        const json = this.toJSON();
+        let result = new EventListDtoPagedResultDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IEventListDtoPagedResultDto {
+    totalCount: number;
+    items: EventListDto[] | undefined;
+}
+
+export class CreateEventInput implements ICreateEventInput {
+    title: string;
+    description: string | undefined;
+    date: moment.Moment;
+    maxRegistrationCount: number;
+    id: string;
+
+    constructor(data?: ICreateEventInput) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.date = _data["date"] ? moment(_data["date"].toString()) : <any>undefined;
+            this.maxRegistrationCount = _data["maxRegistrationCount"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): CreateEventInput {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateEventInput();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        data["maxRegistrationCount"] = this.maxRegistrationCount;
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): CreateEventInput {
+        const json = this.toJSON();
+        let result = new CreateEventInput();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICreateEventInput {
+    title: string;
+    description: string | undefined;
+    date: moment.Moment;
+    maxRegistrationCount: number;
+    id: string;
 }
 
 export class CreateRoleDto implements ICreateRoleDto {
@@ -5405,6 +5600,112 @@ export class UserDtoPagedResultDto implements IUserDtoPagedResultDto {
 export interface IUserDtoPagedResultDto {
     totalCount: number;
     items: UserDto[] | undefined;
+}
+
+export class VenueDtoListResultDto implements IVenueDtoListResultDto {
+    items: VenueDto[] | undefined;
+
+    constructor(data?: IVenueDtoListResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items.push(VenueDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): VenueDtoListResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new VenueDtoListResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+
+    clone(): VenueDtoListResultDto {
+        const json = this.toJSON();
+        let result = new VenueDtoListResultDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IVenueDtoListResultDto {
+    items: VenueDto[] | undefined;
+}
+
+export class CreateVenueInput implements ICreateVenueInput {
+    name: string | undefined;
+    address: string | undefined;
+    city: string | undefined;
+    state: string | undefined;
+
+    constructor(data?: ICreateVenueInput) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.address = _data["address"];
+            this.city = _data["city"];
+            this.state = _data["state"];
+        }
+    }
+
+    static fromJS(data: any): CreateVenueInput {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateVenueInput();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["address"] = this.address;
+        data["city"] = this.city;
+        data["state"] = this.state;
+        return data; 
+    }
+
+    clone(): CreateVenueInput {
+        const json = this.toJSON();
+        let result = new CreateVenueInput();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICreateVenueInput {
+    name: string | undefined;
+    address: string | undefined;
+    city: string | undefined;
+    state: string | undefined;
 }
 
 export class ApiException extends Error {

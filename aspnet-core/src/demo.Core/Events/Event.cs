@@ -8,6 +8,7 @@ using Abp.Domain.Entities.Auditing;
 using Abp.Timing;
 using Abp.UI;
 using demo.Domain.Events;
+using demo.Venues;
 
 namespace demo.Events
 {
@@ -37,8 +38,14 @@ namespace demo.Events
         [Range(0, int.MaxValue)]
         public virtual int MaxRegistrationCount { get; protected set; }
 
+        [Required]
+        public virtual Guid VenueId { get; protected set; }
+
         [ForeignKey("EventId")]
         public virtual ICollection<EventRegistration> Registrations { get; protected set; }
+
+        [ForeignKey("VenueId")]
+        public virtual Venue Venue { get; protected set;  }
 
         /// <summary>
         /// We don't make constructor public and forcing to create events using <see cref="Create"/> method.
@@ -50,20 +57,23 @@ namespace demo.Events
 
         }
 
-        public static Event Create(Guid guid,int tenantId, string title, DateTime date, string description = null, int maxRegistrationCount = 0)
+        public static Event Create(Guid guid,int tenantId, string title, DateTime date, Guid venueId, string description = null, int maxRegistrationCount = 0)
         {
             var @event = new Event
             {   
                 // Id = Guid.NewGuid(); // original 
-                Id = guid , //TODO probably modify it to use seq GUID generator
+                Id = guid , //TODO modify it to use seq GUID generator
                 TenantId = tenantId,
                 Title = title,
                 Description = description,
-                MaxRegistrationCount = maxRegistrationCount
+                MaxRegistrationCount = maxRegistrationCount,
+                VenueId = venueId
+                
             };
 
             @event.SetDate(date);
-
+            
+            // @event.Venue = Venue.CreateEmpty();
             @event.Registrations = new Collection<EventRegistration>();
 
             return @event;

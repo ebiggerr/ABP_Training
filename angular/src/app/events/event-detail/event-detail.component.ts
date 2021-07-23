@@ -77,7 +77,7 @@ export class EventDetailComponent extends AppComponentBase implements OnInit {
     }
 
     loadEvent() {
-        this._eventService.getDetail(this.eventId)
+        this._eventService.getDetailWithVenue(this.eventId)
             .subscribe((result: EventDetailOutput) => {
                 this.event = result;
                 this.eventDate = result.date.toDate();
