@@ -7,6 +7,7 @@ using Abp.Domain.Repositories;
 using Abp.Events.Bus;
 using Abp.UI;
 using demo.Authorization.Users;
+using demo.Venues;
 using Microsoft.EntityFrameworkCore;
 
 namespace demo.Events
@@ -19,15 +20,19 @@ namespace demo.Events
         private readonly IRepository<EventRegistration> _eventRegistrationRepository;
         private readonly IRepository<Event, Guid> _eventRepository;
         private readonly IGuidGenerator _guidGenerator;
+        private readonly IRepository<Venue, Guid> _venueRepository;
 
         public EventManager(
             IEventRegistrationPolicy registrationPolicy,
             IRepository<EventRegistration> eventRegistrationRepository,
-            IRepository<Event, Guid> eventRepository, IGuidGenerator guidGenerator)
+            IRepository<Event, Guid> eventRepository, 
+            IRepository<Venue, Guid> venueRepository,
+            IGuidGenerator guidGenerator)
         {
             _registrationPolicy = registrationPolicy;
             _eventRegistrationRepository = eventRegistrationRepository;
             _eventRepository = eventRepository;
+            _venueRepository = venueRepository;
             _guidGenerator = guidGenerator;
 
             EventBus = NullEventBus.Instance;
@@ -46,6 +51,10 @@ namespace demo.Events
 
         public async Task CreateAsync(Event @event)
         {
+            var venue = await _venueRepository.GetAsync(@event.VenueId);
+            venue.MakeItBooked();
+            await EventBus.TriggerAsync(new VenueBookedEvent(venue));
+
             await _eventRepository.InsertAsync(@event);
         }
 

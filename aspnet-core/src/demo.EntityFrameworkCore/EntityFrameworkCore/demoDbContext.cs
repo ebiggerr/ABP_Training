@@ -5,6 +5,7 @@ using demo.Authorization.Users;
 using demo.MultiTenancy;
 using demo.Tasks;
 using demo.Events;
+using demo.Venues;
 
 namespace demo.EntityFrameworkCore
 {
@@ -16,6 +17,8 @@ namespace demo.EntityFrameworkCore
         public DbSet<Event> Events { get; set; }
 
         public DbSet<EventRegistration> EventRegistrations { get; set; }
+        
+        public DbSet<Venue> Venues { get; set; }
 
         public demoDbContext(DbContextOptions<demoDbContext> options)
             : base(options)

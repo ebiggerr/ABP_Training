@@ -3,7 +3,7 @@
         <div class="card main-content">
             <div class="header">
                 <h2>
-                    {{event.title}} <span class="event-detail-header"><i class="fa fa-calendar"></i> <span> {{eventDate | date: 'DD-MM-YYYY hh:mm a' //| date:'short'*/ }}</span></span>
+                    {{event.title}} <span class="event-detail-header"><i class="fa fa-calendar"></i> <span> {{eventDate | date: 'dd-MM-YYYY hh:mm a' //| date:'short'*/ }}</span></span>
                 </h2>
                 <ul class="header-dropdown m-r--5">
                     <li>
@@ -18,7 +18,10 @@
             </div>
             <div class="body table-responsive">
                 <div>
-                    {{event.description}}
+                    Description of the Event: {{event.description}}
+                </div>
+                <div>
+                   Venue of the Event: {{event.venue.name}} ( {{event.venue.address}} - {{event.venue.city}} - {{event.venue.state}} )
                 </div>
                 <h5>
                     {{l(" {0} registered Of {1} Available Registration", event.registrationsCount, event.maxRegistrationCount)}}

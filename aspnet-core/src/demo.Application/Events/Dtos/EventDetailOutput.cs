@@ -21,5 +21,7 @@ namespace demo.Events.Dtos
             public int RegistrationsCount { get; set; }
 
             public ICollection<EventRegistrationDto> Registrations { get; set; }
+
+            public VenueDto Venue { get; set; }
         }
 }
