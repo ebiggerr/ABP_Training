@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Formats.Asn1;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Abp;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
-using Abp.AutoMapper;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
 using Abp.Runtime.Session;
 using Abp.UI;
-using AutoMapper;
 using demo.Authorization.Users;
 using demo.Events.Dtos;
 using demo.Venues;
@@ -23,7 +19,6 @@ using Microsoft.EntityFrameworkCore;
 namespace demo.Events
 {
     [AbpAuthorize]
-    // public class EventAppService: IApplicationService{
     public class EventAppService : AsyncCrudAppService<Event,EventListDto,Guid,PagedEventResultRequestDto,CreateEventInput> {
     private readonly IEventManager _eventManager;
     private readonly IVenueManager _venueManager;
@@ -60,39 +55,6 @@ namespace demo.Events
             return new ListResultDto<EventListDto>(ObjectMapper.Map<List<EventListDto>>(events));
             // return new ListResultDto<EventListDto>(ObjectMapper.MapTo<List<EventListDto>>(events));
         }
-
-        /*public async Task<PagedResultDto<EventListDto>> GetPagedListingAsync()
-        {
-            var events = await _eventRepository
-                .GetAll().ToListAsync();
-                //
-                // .Skip(#offset)
-                // .Take(#limit) //
-            
-            
-            //paging logic
-
-        
-            return new PagedResultDto<EventListDto>();
-        }*/
-
-        /*public async Task<EventDetailOutput> GetDetailAsync(EntityDto<Guid> input)
-        {
-            var @event = await _eventRepository
-                .GetAll()
-                .Include(e => e.Registrations)
-                .ThenInclude(r => r.User)
-                .Where(e => e.Id == input.Id)
-                .FirstOrDefaultAsync();
-
-            if (@event == null)
-            {
-                throw new UserFriendlyException("Could not found the event, maybe it's deleted.");
-            }
-
-            return ObjectMapper.Map<EventDetailOutput>(@event);
-            // return ObjectMapper.MapTo<EventDetailOutput>(@event);
-        }*/
         
         public async Task<EventDetailOutput> GetDetailWithVenueAsync(EntityDto<Guid> input)
         {
@@ -121,20 +83,6 @@ namespace demo.Events
                          || x.Description.Contains(input.Keyword))
                 .WhereIf(input.IsCancelled.HasValue, x => x.IsCancelled == input.IsCancelled);
         }
-        
-        /*public async Task CreateEventAsync(CreateEventInput input)
-        {
-            var userId = AbpSession.GetUserId();
-            if (userId == 1)
-            {
-                throw new UserFriendlyException("Host cannot create an event");
-            }
-
-            var id = _guidGenerator.Create(); 
-            var @event = Event.Create(id,AbpSession.GetTenantId(), input.Title, input.Date, input.Description, input.MaxRegistrationCount);
-            
-            await _eventManager.CreateAsync(@event);
-        }*/
 
         public async Task CreateEventWithVenueAsync(CreateEventWithVenueInput input)
         {
