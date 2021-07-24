@@ -60,8 +60,11 @@ namespace demo.Events
 
         public void Cancel(Event @event)
         {
+            var venue = _venueRepository.Get(@event.VenueId);
             @event.Cancel();
+            venue.Unbook();
             EventBus.Trigger(new EventCancelledEvent(@event));
+            EventBus.Trigger(new VenueBookedEvent(venue));
         }
 
         public async Task<EventRegistration> RegisterAsync(Event @event, User user)
