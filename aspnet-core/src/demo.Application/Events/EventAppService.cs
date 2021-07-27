@@ -88,19 +88,7 @@ namespace demo.Events
         {
             var eventGuid = _guidGenerator.Create();
 
-            var venue = await _venueManager.GetVenueAsync(input.venueId);
-
-            /*if (venue == null)
-            {
-                throw new UserFriendlyException("Could not found the venue.");
-            }*/
-
-            if (venue.IsBooked)
-            {
-                throw new UserFriendlyException("Venue already booked by another event.");
-            }
-
-            var @event = Event.Create(eventGuid, AbpSession.GetTenantId(), input.Title, input.Date, venue.Id, input.Description,
+            var @event = Event.Create(eventGuid, AbpSession.GetTenantId(), input.Title, input.Date, input.venueId, input.Description,
                 input.MaxRegistrationCount);
 
             await _eventManager.CreateAsync(@event);

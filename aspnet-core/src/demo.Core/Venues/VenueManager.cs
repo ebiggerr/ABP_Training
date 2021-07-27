@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Abp.Domain.Repositories;
+using Abp.UI;
 
 namespace demo.Venues
 {
@@ -14,9 +15,23 @@ namespace demo.Venues
             _venueRepository = venueRepository;
         }
 
-        public async Task<Venue> GetVenueAsync(Guid id)
+        public async Task<Venue> CheckVenueAsync(Guid id)
         {
-            return await _venueRepository.GetAsync(id);
+            var venue =  await _venueRepository.GetAsync(id);
+
+            if (venue == null)
+            {
+                throw new UserFriendlyException("Venue Not Found");
+            }
+
+            if (venue.IsBooked)
+            {
+                throw new UserFriendlyException("Venue is already booked by other event.");
+            }
+            
+            venue.MakeItBooked();
+
+            return venue;
         }
 
         public async Task Create(Venue venue)
@@ -25,5 +40,6 @@ namespace demo.Venues
             
             await _venueRepository.InsertAsync(venue);
         }
+        
     }
 }

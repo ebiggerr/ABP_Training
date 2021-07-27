@@ -6,7 +6,7 @@ namespace demo.Venues
 {
     public interface IVenueManager: IDomainService
     {
-        public Task<Venue> GetVenueAsync(Guid id);
+        public Task<Venue> CheckVenueAsync(Guid id);
 
         public Task Create(Venue venue);
     }
