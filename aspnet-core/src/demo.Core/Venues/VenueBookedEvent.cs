@@ -1,11 +1,12 @@
-﻿using Abp.Events.Bus.Entities;
+﻿using System;
+using Abp.Events.Bus;
+using Abp.Events.Bus.Entities;
 
 namespace demo.Venues
 {
-    public class VenueBookedEvent: EntityEventData<Venue>
+    public class VenueBookedEvent: EventData
     {
-        public VenueBookedEvent(Venue entity) : base(entity)
-        {
-        }
+        public Guid VenueId { get; set; }
+        
     }
 }
