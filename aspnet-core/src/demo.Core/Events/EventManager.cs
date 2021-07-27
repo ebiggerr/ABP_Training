@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Abp;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.Events.Bus;
 using Abp.UI;
 using demo.Authorization.Users;
@@ -48,13 +49,14 @@ namespace demo.Events
 
             return @event;
         }
-
+        
         public async Task CreateAsync(Event @event)
         {
-            var venue = await _venueRepository.GetAsync(@event.VenueId);
-            venue.MakeItBooked();
-            await EventBus.TriggerAsync(new VenueBookedEvent(venue));
-
+            EventBus.Trigger(new VenueBookedEvent
+            {
+                VenueId = @event.VenueId,
+            });
+            
             await _eventRepository.InsertAsync(@event);
         }
 
@@ -64,7 +66,7 @@ namespace demo.Events
             @event.Cancel();
             venue.Unbook();
             EventBus.Trigger(new EventCancelledEvent(@event));
-            EventBus.Trigger(new VenueBookedEvent(venue));
+            EventBus.Trigger(new VenueBookedEvent()); //release the booked venue to open booking for upcoming event
         }
 
         public async Task<EventRegistration> RegisterAsync(Event @event, User user)
